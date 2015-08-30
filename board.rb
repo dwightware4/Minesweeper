@@ -39,7 +39,7 @@ class Board
 
   def display
     header = (0...size).to_a.join(" ")
-    puts "   #{@possible_bombs} BOMBS LEFT"
+    puts "#{@possible_bombs} POSSIBLE BOMBS LEFT!!!"
     puts "  #{header}".colorize(:red)
     self.grid.each_with_index do |row, i|
       display_row(row, i)
@@ -48,7 +48,7 @@ class Board
   end
 
   def display_row(row, i)
-    tiles = row.map { |tile, i| tile.reveal }.join(" ")
+    tiles = row.map { |tile, i| tile.reveal }.join(" ").colorize(:blue)
     puts "#{i.to_s.colorize(:red)} #{tiles}"
   end
 

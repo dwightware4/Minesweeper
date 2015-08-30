@@ -9,12 +9,15 @@ class Game
   end
 
   def get_pos
-    move = gets.chomp.split(", ").map { |el| el.to_i }
+    move = gets.chomp.split(",").map { |el| el.to_i }
 
-    unless board.pos_on_board?(move)
+    if board.pos_on_board?(move)
+      return move
+    else
+      puts "Invalid Move!"
+      puts "Try Again: "
       get_pos
     end
-    move
   end
 
   def single_move
@@ -55,14 +58,18 @@ if __FILE__ == $PROGRAM_NAME
   puts
   puts "Select Difficulty: (Easy, Medium, or Hard)"
   
-  difficulty = gets.chomp
-  
+  difficulty = gets.chomp.downcase
+  until difficulty == "easy" || difficulty == "medium" || difficulty == "hard"
+    puts "Invalid Difficulty, Try Again!"
+    difficulty = gets.chomp.downcase
+  end
+
   case difficulty
-  when "Easy".downcase
+  when "easy"
     game = Game.new(9, 10)
-  when "Medium".downcase
+  when "medium"
     game = Game.new(16, 40)
-  when "Hard".downcase
+  when "hard"
     game = Game.new(30, 99)
   end
   
