@@ -1,16 +1,15 @@
 require 'byebug'
-require_relative 'board'
+require './board.rb'
 
 class Game
   attr_reader :board
 
-  def initialize(size = 9, bombs = 4)
+  def initialize(size = 9, bombs = size ** 2 / 8)
     @board = Board.new(size, bombs)
   end
 
   def get_pos
-    puts "Choose Move"
-    move = gets.chomp.split("").map { |el| el.to_i }
+    move = gets.chomp.split(", ").map { |el| el.to_i }
 
     unless board.pos_on_board?(move)
       get_pos
@@ -21,36 +20,51 @@ class Game
   def single_move
     move = get_pos
 
-    Kernel.abort("Game Over") if board.is_bomb?(move)
+    Kernel.abort("GAME OVER!") if board.is_bomb?(move)
 
     bomb_count = board.find_bomb_count(move)
     if bomb_count > 0
       board[move].reveal = bomb_count
     else
       board.check(move)
-      #board[move].reveal = "_"
     end
   end
 
   def play
-    while true
-
+    a = Time.now
+    until won?
       system("clear")
       board.possible_bomb_count
       board.display
       single_move
-
     end
+    puts "YOU WON!"
+    puts "Time: #{(Time.now - a).round} seconds!"
   end
 
   def won?
-
+    board.possible_bombs == board.bombs + 1
   end
 
 
 end
 
 if __FILE__ == $PROGRAM_NAME
-  game = Game.new
+  system("clear")
+  puts "Welcome to Minesweeper!"
+  puts
+  puts "Select Difficulty: (Easy, Medium, or Hard)"
+  
+  difficulty = gets.chomp
+  
+  case difficulty
+  when "Easy".downcase
+    game = Game.new(9, 10)
+  when "Medium".downcase
+    game = Game.new(16, 40)
+  when "Hard".downcase
+    game = Game.new(30, 99)
+  end
+  
   game.play
 end

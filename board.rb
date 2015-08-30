@@ -1,6 +1,6 @@
 require 'colorize'
-require_relative 'tile.rb'
 require 'byebug'
+require './tile.rb'
 
 class Board
   attr_reader :grid, :size, :bombs
@@ -39,8 +39,8 @@ class Board
 
   def display
     header = (0...size).to_a.join(" ")
-    puts "#{@possible_bombs} LEFT"
-    puts "  #{header}".colorize(:blue)
+    puts "   #{@possible_bombs} BOMBS LEFT"
+    puts "  #{header}".colorize(:red)
     self.grid.each_with_index do |row, i|
       display_row(row, i)
     end
@@ -49,7 +49,7 @@ class Board
 
   def display_row(row, i)
     tiles = row.map { |tile, i| tile.reveal }.join(" ")
-    puts "#{i.to_s.colorize(:blue)} #{tiles}"
+    puts "#{i.to_s.colorize(:red)} #{tiles}"
   end
 
   def populate
@@ -93,7 +93,7 @@ class Board
 
     grid.each do |row|
       row.each do |tile|
-        counter += 1 if tile.reveal = "_" || tile.reveal.is_a?(Fixnum)
+        counter += 1 if tile.reveal == "_" || tile.reveal.is_a?(Fixnum)
       end
     end
     @possible_bombs = size**2 - counter
