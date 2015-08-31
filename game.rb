@@ -23,7 +23,7 @@ class Game
   def single_move
     move = get_pos
 
-    Kernel.abort("GAME OVER!") if board.is_bomb?(move)
+    Kernel.abort("GAME OVER!") if board.bomb?(move)
 
     bomb_count = board.find_bomb_count(move)
     if bomb_count > 0

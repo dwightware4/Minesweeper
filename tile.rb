@@ -4,6 +4,6 @@ class Tile
 
   def initialize(bomb = false)
     @bomb = bomb
-    @reveal = "*"
+    @reveal = '@'
   end
 end

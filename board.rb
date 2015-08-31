@@ -1,11 +1,9 @@
 require 'colorize'
-require 'byebug'
 require './tile.rb'
 
+# minesweeper board
 class Board
-  attr_reader :grid, :size, :bombs
-  attr_accessor :possible_bombs
-
+  attr_reader :grid, :size, :bombs, :possible_bombs
 
   def initialize(size, bombs)
     @grid = Array.new(size) { Array.new(size) }
@@ -16,9 +14,8 @@ class Board
   end
 
   def check(pos)
-    return if self[pos].reveal == "_" || self[pos].reveal != "*"
-    self[pos].reveal = "_"
-
+    return if self[pos].reveal != '@'
+    self[pos].reveal = '_'
 
     (-1..1).each do |x_offset|
       (-1..1).each do |y_offset|
@@ -38,37 +35,34 @@ class Board
   end
 
   def display
-    header = (0...size).to_a.join(" ")
-    puts "#{@possible_bombs} POSSIBLE BOMBS LEFT!!!"
+    header = (0...size).to_a.join(' ')
+    puts "#{possible_bombs} POSSIBLE BOMBS LEFT!!!"
     puts "  #{header}".colorize(:red)
-    self.grid.each_with_index do |row, i|
+    grid.each_with_index do |row, i|
       display_row(row, i)
     end
     nil
   end
 
   def display_row(row, i)
-    tiles = row.map { |tile, i| tile.reveal }.join(" ").colorize(:blue)
+    tiles = row.map(&:reveal).join(' ').colorize(:blue)
     puts "#{i.to_s.colorize(:red)} #{tiles}"
   end
 
   def populate
     bombs.times { place_tile(Tile.new(true)) }
-    (size**2-bombs).times { place_tile(Tile.new) }
+    (size**2 - bombs).times { place_tile(Tile.new) }
   end
 
   def place_tile(tile)
-
     position = random_pos
 
-    until self[position].nil?
-      position = random_pos
-    end
+    position = random_pos until self[position].nil?
 
     self[position] = tile
   end
 
-  def is_bomb?(pos)
+  def bomb?(pos)
     self[pos].bomb
   end
 
@@ -79,9 +73,7 @@ class Board
       (-1..1).each do |y_offset|
         x = x_offset + pos[0]
         y = y_offset + pos[1]
-        if pos_on_board?([x, y]) && self[[x, y]].bomb
-         total_bombs += 1
-        end
+        total_bombs += 1 if pos_on_board?([x, y]) && self[[x, y]].bomb
       end
     end
 
@@ -93,14 +85,14 @@ class Board
 
     grid.each do |row|
       row.each do |tile|
-        counter += 1 if tile.reveal == "_" || tile.reveal.is_a?(Fixnum)
+        counter += 1 if tile.reveal == '_' || tile.reveal.is_a?(Fixnum)
       end
     end
     @possible_bombs = size**2 - counter
   end
 
   def pos_on_board?(pos)
-    pos.all? { |pos| (0...size).include?(pos) }
+    pos.all? { |coord| (0...size).include?(coord) }
   end
 
   def random_pos
@@ -110,14 +102,12 @@ class Board
   end
 
   def [](pos)
-    x,y = pos
+    x, y = pos
     grid[x][y]
   end
 
   def []=(pos, value)
-    x,y = pos
+    x, y = pos
     grid[x][y] = value
   end
-
-  private
 end
