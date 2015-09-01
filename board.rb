@@ -3,7 +3,7 @@ require './tile.rb'
 
 # minesweeper board
 class Board
-  attr_reader :grid, :size, :bombs, :possible_bombs
+  attr_reader :grid, :size, :bombs, :possible_bombs, :rows
 
   def initialize(size, bombs)
     @grid = Array.new(size) { Array.new(size) }
@@ -11,6 +11,10 @@ class Board
     @bombs = bombs
     @possible_bombs = size**2
     populate
+  end
+  
+  def on_board?(pos)
+    pos.all? { |el| el >= 0 && el < (@size) }
   end
 
   def check(pos)
@@ -109,5 +113,9 @@ class Board
   def []=(pos, value)
     x, y = pos
     grid[x][y] = value
+  end
+  
+  def rows
+    @grid
   end
 end

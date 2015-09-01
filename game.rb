@@ -1,11 +1,15 @@
 require 'byebug'
 require './board.rb'
+require './display.rb'
+require './cursorable'
 
 class Game
+  include Cursorable
   attr_reader :board
 
   def initialize(size = 9, bombs = size ** 2 / 8)
     @board = Board.new(size, bombs)
+    @display = Display.new(@board)
   end
 
   def get_pos
@@ -20,9 +24,7 @@ class Game
     end
   end
 
-  def single_move
-    move = get_pos
-
+  def single_move(move)
     Kernel.abort("GAME OVER!") if board.bomb?(move)
 
     bomb_count = board.find_bomb_count(move)
@@ -34,15 +36,20 @@ class Game
   end
 
   def play
-    a = Time.now
-    until won?
-      system("clear")
-      board.possible_bomb_count
-      board.display
-      single_move
+    while true
+      @display.render
+      move = get_move
+      single_move(move)
     end
-    puts "YOU WON!"
-    puts "Time: #{(Time.now - a).round} seconds!"
+  end
+  
+  def get_move
+    result = nil
+    until result
+      @display.render
+      result = @display.get_input
+    end
+  single_move(result)
   end
 
   def won?
