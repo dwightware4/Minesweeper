@@ -1,9 +1,10 @@
 class Tile
   attr_reader :bomb
-  attr_accessor :reveal
+  attr_accessor :reveal, :explored
 
   def initialize(bomb = false)
     @bomb = bomb
-    @reveal = '  '
+    @reveal = '   '
+    @explored = false
   end
 end

@@ -1,25 +1,22 @@
 require 'colorize'
-require './tile.rb'
+require_relative 'tile.rb'
 
-# minesweeper board
 class Board
   attr_reader :grid, :size, :bombs, :possible_bombs, :rows
 
   def initialize(size, bombs)
     @grid = Array.new(size) { Array.new(size) }
-    @size = size
-    @bombs = bombs
-    @possible_bombs = size**2
+    @size, @bombs, @possible_bombs = size, bombs, size**2
     populate
   end
-  
+
   def on_board?(pos)
     pos.all? { |el| el >= 0 && el < (@size) }
   end
 
   def check(pos)
-    return if self[pos].reveal != '@'
-    self[pos].reveal = '_'
+    return if self[pos].reveal != '  '
+    self[pos].reveal = '  '
 
     (-1..1).each do |x_offset|
       (-1..1).each do |y_offset|
@@ -31,6 +28,7 @@ class Board
           next
         elsif bomb_count > 0
           self[neighbor_pos].reveal = bomb_count
+          self[neighbor_pos].explored = true
         else
           check(neighbor_pos)
         end
@@ -71,7 +69,7 @@ class Board
   end
 
   def find_bomb_count(pos)
-    total_bombs = 0
+      total_bombs = 0
 
     (-1..1).each do |x_offset|
       (-1..1).each do |y_offset|
@@ -89,7 +87,7 @@ class Board
 
     grid.each do |row|
       row.each do |tile|
-        counter += 1 if tile.reveal == '_' || tile.reveal.is_a?(Fixnum)
+        counter += 1 if tile.reveal == '  ' || tile.reveal.is_a?(Fixnum)
       end
     end
     @possible_bombs = size**2 - counter
@@ -106,7 +104,7 @@ class Board
   end
 
   def [](pos)
-    x, y = pos
+    x, y = pos[0], pos[1]
     grid[x][y]
   end
 
@@ -114,8 +112,11 @@ class Board
     x, y = pos
     grid[x][y] = value
   end
-  
+
   def rows
     @grid
   end
+
+  private
+  attr_reader :size
 end

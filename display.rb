@@ -1,8 +1,8 @@
 require 'colorize'
-load 'cursorable.rb'
+require_relative 'cursorable.rb'
 
 class Display
-  attr_accessor :board
+  attr_accessor :board, :cursor_pos
   include Cursorable
 
   def initialize(board)
@@ -27,20 +27,18 @@ class Display
   def colors_for(i, j)
     if [i, j] == @cursor_pos
       bg = :green
-    # elsif @board[[i, j]].selected
-    #   bg = :cyan
-    elsif (i + j).odd?
-      bg = :light_black
-    else
+    elsif board[[i, j]].explored == true
       bg = :light_white
+    else
+      bg = :light_black
     end
     { background: bg, color: :black }
   end
 
   def render
     system("clear")
-    puts "Welcome to Minesweeper!"
-    puts "Arrow keys or WASD to move, Enter or Space to select"
+    puts "Welcome to Minesweeper!".colorize(:red)
+    puts "Arrow keys or WASD to move, Space to select".colorize(:red)
     build_grid.each do |row|
 
       puts row.join
