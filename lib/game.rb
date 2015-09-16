@@ -16,7 +16,9 @@ class Game
     Kernel.abort("GAME OVER!") if board.bomb?(move)
 
     bomb_count = board.find_bomb_count(move)
+
     if bomb_count > 0
+      board[move].explored = true
       board[move].reveal = " #{bomb_count} "
     else
       board.check(move)

@@ -38,7 +38,8 @@ class Display
   def render
     system("clear")
     puts "Welcome to Minesweeper!".colorize(:red)
-    puts "Arrow keys or WASD to move, Space to select".colorize(:red)
+    puts "Arrow keys to move, Space to select".colorize(:red)
+    puts "Bombs: #{board.possible_bomb_count}"
     build_grid.each do |row|
 
       puts row.join

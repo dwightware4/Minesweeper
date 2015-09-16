@@ -11,26 +11,27 @@ class Board
   end
 
   def on_board?(pos)
-    pos.all? { |el| el >= 0 && el < (@size) }
+    pos.all? { |coord| coord >= 0 && coord < (@size) }
   end
 
   def check(pos)
-    return if self[pos].reveal != '  '
-    self[pos].reveal = '  '
+    self[pos].explored = true
+    return if self[pos].reveal == '   '
+    self[pos].reveal = '   '
 
     (-1..1).each do |x_offset|
       (-1..1).each do |y_offset|
         neighbor_pos = [pos[0] + x_offset, pos[1] + y_offset]
-        next if neighbor_pos == pos
-        bomb_count = find_bomb_count(neighbor_pos)
+        next if neighbor_pos == pos || self[neighbor_pos].bomb
+        next unless on_board?(neighbor_pos)
 
-        if !pos_on_board?(neighbor_pos) || self[neighbor_pos].bomb
-          next
-        elsif bomb_count > 0
-          self[neighbor_pos].reveal = bomb_count
+        bomb_count = find_bomb_count(neighbor_pos)
+        if bomb_count > 0
+          self[neighbor_pos].reveal = " #{bomb_count} "
           self[neighbor_pos].explored = true
         else
           check(neighbor_pos)
+          next
         end
       end
     end
@@ -87,10 +88,10 @@ class Board
 
     grid.each do |row|
       row.each do |tile|
-        counter += 1 if tile.reveal == '  ' || tile.reveal.is_a?(Fixnum)
+        counter += 1 if tile.reveal == '   ' || tile.reveal.is_a?(Fixnum)
       end
     end
-    @possible_bombs = size**2 - counter
+    @possible_bombs -= counter
   end
 
   def pos_on_board?(pos)

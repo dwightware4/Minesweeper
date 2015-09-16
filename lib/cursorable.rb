@@ -7,6 +7,7 @@ module Cursorable
     "\e[B" => :down,
     "\e[C" => :right,
     "\e[D" => :left,
+    "\u0003" => :ctrl_c,
   }
 
   MOVES = {
