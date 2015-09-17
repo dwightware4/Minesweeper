@@ -6,7 +6,7 @@ class Board
 
   def initialize(size, bombs)
     @grid = Array.new(size) { Array.new(size) }
-    @size, @bombs, @possible_bombs, @unexplored = size, bombs, size**2, ((size**2) - bombs)
+    @size, @bombs, @possible_bombs = size, bombs, size**2
     populate
   end
 
@@ -22,9 +22,8 @@ class Board
     (-1..1).each do |x_offset|
       (-1..1).each do |y_offset|
         neighbor_pos = [pos[0] + x_offset, pos[1] + y_offset]
-        # debugger
-        next unless on_board?(neighbor_pos)
         next if neighbor_pos == pos || self[neighbor_pos].bomb
+        next unless on_board?(neighbor_pos)
 
         bomb_count = find_bomb_count(neighbor_pos)
         if bomb_count > 0
@@ -93,17 +92,6 @@ class Board
       end
     end
     @possible_bombs -= counter
-  end
-
-  def unexplored_count
-    counter = 0
-
-    grid.each do |row|
-      row.each do |tile|
-        counter += 1 if tile.reveal == ' @ ' || tile.reveal.is_a?(Fixnum) || tile.reveal == "   "
-      end
-    end
-    @unexplored -= counter
   end
 
   def pos_on_board?(pos)

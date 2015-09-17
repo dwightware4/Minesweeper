@@ -3,7 +3,6 @@ require "io/console"
 module Cursorable
   KEYMAP = {
     " " => :space,
-    "f" => :flag,
     "\e[A" => :up,
     "\e[B" => :down,
     "\e[C" => :right,
@@ -27,13 +26,11 @@ module Cursorable
     case key
     when :ctrl_c
       exit 0
-    when :space
-      [@display.cursor_pos, :explore]
+    when :return, :space
+      @display.cursor_pos
     when :left, :right, :up, :down
       update_pos(MOVES[key])
       nil
-    when :flag
-      [@display.cursor_pos, :flag]
     else
       puts key
     end

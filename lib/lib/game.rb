@@ -10,7 +10,6 @@ class Game
   def initialize(size = 9, bombs = size ** 2 / 8)
     @board = Board.new(size, bombs)
     @display = Display.new(@board)
-    @bombs = bombs
   end
 
   def single_move(move)
@@ -27,18 +26,10 @@ class Game
   end
 
   def play
-    until won?
+    while true
       @display.render
       move = get_move
-      if move[1] == :explore
-        single_move(move[0]) unless board[move[0]].reveal == " X "
-      elsif move[1] == :flag
-        if board[move[0]].reveal = " @ "
-          board[move[0]].reveal = " X "
-        else
-          board[move[0]].reveal = " @ "
-        end
-      end
+      single_move(move)
     end
   end
 
