@@ -7,4 +7,5 @@ class Tile
     @reveal = ' @ '
     @explored = false
   end
+
 end

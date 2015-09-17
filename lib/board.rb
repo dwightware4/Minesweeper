@@ -110,10 +110,8 @@ class Board
     pos.all? { |coord| (0...size).include?(coord) }
   end
 
-  def random_pos
-    result = []
-    2.times { result << rand(size) }
-    result
+  def rows
+    @grid
   end
 
   def [](pos)
@@ -126,10 +124,9 @@ class Board
     grid[x][y] = value
   end
 
-  def rows
-    @grid
-  end
-
   private
-  attr_reader :size
+
+  def random_pos
+    [rand(size), rand(size)]
+  end
 end
