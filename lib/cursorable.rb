@@ -23,21 +23,7 @@ module Cursorable
     handle_key(key)
   end
 
-  def handle_key(key)
-    case key
-    when :ctrl_c
-      exit 0
-    when :space
-      [@display.cursor_pos, :explore]
-    when :left, :right, :up, :down
-      update_pos(MOVES[key])
-      nil
-    when :flag
-      [@display.cursor_pos, :flag]
-    else
-      puts key
-    end
-  end
+  private
 
   def read_char
     STDIN.echo = false
@@ -55,31 +41,30 @@ module Cursorable
     return input
   end
 
-  def update_pos(diff)
-    new_pos = [@display.cursor_pos[0] + diff[0], @display.cursor_pos[1] + diff[1]]
-    @display.cursor_pos = new_pos if @display.board.on_board?(new_pos)
+  def handle_key(key)
+    case key
+    when :ctrl_c
+      exit 0
+    when :space
+      {location: display.cursor_pos, action: :explore}
+    when :left, :right, :up, :down
+      update_pos(MOVES[key])
+      nil
+    when :flag
+      {location: display.cursor_pos, action: :flag}
+    else
+      puts key
+    end
+  end
+
+  def update_pos(change)
+    old_x, old_y = display.cursor_pos
+    new_x, new_y = change
+    new_pos = [old_x + new_x, old_y + new_y]
+    display.cursor_pos = new_pos if on_board?(new_pos)
+  end
+
+  def on_board?(pos)
+    pos.all? { |coord| coord >= 0 && coord < (display.board.size) }
   end
 end
-
-# KEYMAP = {
-#   " " => :space,
-#   "h" => :left,
-#   "j" => :down,
-#   "k" => :up,
-#   "l" => :right,
-#   "w" => :left,
-#   "a" => :down,
-#   "s" => :up,
-#   "d" => :right,
-#   "\t" => :tab,
-#   "\r" => :return,
-#   "\n" => :newline,
-#   "\e" => :escape,
-#   "\e[A" => :up,
-#   "\e[B" => :down,
-#   "\e[C" => :right,
-#   "\e[D" => :left,
-#   "\177" => :backspace,
-#   "\004" => :delete,
-#   "\u0003" => :ctrl_c,
-# }

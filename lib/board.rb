@@ -6,7 +6,7 @@ class Board
 
   def initialize(size, bombs)
     @grid = Array.new(size) { Array.new(size) }
-    @size, @bombs, @possible_bombs, @unexplored = size, bombs, size**2, ((size**2) - bombs)
+    @size, @bombs, @possible_bombs, @unexplored = size, bombs, (size**2), ((size**2) - bombs)
     populate
   end
 
@@ -113,6 +113,8 @@ class Board
   def rows
     @grid
   end
+
+
 
   def [](pos)
     x, y = pos[0], pos[1]

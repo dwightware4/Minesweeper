@@ -1,16 +1,46 @@
-require 'byebug'
 require_relative 'board.rb'
 require_relative 'display.rb'
 require_relative 'cursorable'
 
 class Game
   include Cursorable
-  attr_reader :board
 
   def initialize(size = 9, bombs = size ** 2 / 8)
     @board = Board.new(size, bombs)
-    @display = Display.new(@board)
+    @display = Display.new(board)
     @bombs = bombs
+  end
+
+  def play
+    until won?
+      display.render
+      play_turn
+    end
+  end
+
+  private
+  attr_reader :board, :display
+
+  def play_turn
+    move = get_move
+    if move[:action] == :explore
+      single_move(move[:location]) unless board[move[:location]].reveal == " X "
+    elsif move[:action] == :flag
+      if board[move[:location]].reveal = " @ "
+        board[move[:location]].reveal = " X "
+      else
+        board[move[:location]].reveal = " @ "
+      end
+    end
+  end
+
+  def get_move
+    result = nil
+    until result
+      display.render
+      result = get_input
+    end
+  result
   end
 
   def single_move(move)
@@ -26,36 +56,9 @@ class Game
     end
   end
 
-  def play
-    until won?
-      @display.render
-      move = get_move
-      if move[1] == :explore
-        single_move(move[0]) unless board[move[0]].reveal == " X "
-      elsif move[1] == :flag
-        if board[move[0]].reveal = " @ "
-          board[move[0]].reveal = " X "
-        else
-          board[move[0]].reveal = " @ "
-        end
-      end
-    end
-  end
-
-  def get_move
-    result = nil
-    until result
-      @display.render
-      result = get_input
-    end
-  result
-  end
-
   def won?
     board.possible_bombs == board.bombs + 1
   end
-
-
 end
 
 if __FILE__ == $PROGRAM_NAME
