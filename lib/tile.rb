@@ -1,10 +1,24 @@
+require_relative 'board.rb'
+
 class Tile
-  attr_accessor :reveal, :explored
+  attr_accessor :symbol, :state
   attr_reader :bomb
 
   def initialize(bomb = false)
     @bomb = bomb
-    @reveal = ' @ '
-    @explored = false
+    @state = :unknown
+    @flagged = false
+    @symbol = ' ▣ '
+  end
+
+  def update_symbol
+    case state
+    when :unknown
+      @symbol = ' ▣ '
+    when :empty
+      @symbol = '   '
+    when :flagged
+      @symbol = ' X '
+    end
   end
 end

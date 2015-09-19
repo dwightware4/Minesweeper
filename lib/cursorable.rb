@@ -44,27 +44,14 @@ module Cursorable
   def handle_key(key)
     case key
     when :ctrl_c
-      exit 0
+      exit
     when :space
       {location: display.cursor_pos, action: :explore}
     when :left, :right, :up, :down
-      update_pos(MOVES[key])
+      display.move_cursor(MOVES[key])
       nil
     when :flag
       {location: display.cursor_pos, action: :flag}
-    else
-      puts key
     end
-  end
-
-  def update_pos(change)
-    old_x, old_y = display.cursor_pos
-    new_x, new_y = change
-    new_pos = [old_x + new_x, old_y + new_y]
-    display.cursor_pos = new_pos if on_board?(new_pos)
-  end
-
-  def on_board?(pos)
-    pos.all? { |coord| coord >= 0 && coord < (display.board.size) }
   end
 end

@@ -1,20 +1,20 @@
-require 'colorize'
 require_relative 'tile.rb'
+require 'colorize'
 require 'byebug'
 
 class Board
-  attr_reader :grid, :size, :bombs, :possible_bombs
+  attr_accessor :grid, :remaining_bombs, :unexplored_tiles
 
   def initialize(size, bombs)
+    @size, @bombs, @remaining_bombs = size, bombs, bombs
     @grid = Array.new(size) { Array.new(size) }
-    @size, @bombs = size, bombs
+    @unexplored_tiles = size**2
     populate
   end
 
   def check(pos)
-    self[pos].explored = true
-    return if self[pos].reveal == '   '
-    self[pos].reveal = '   '
+    return if self[pos].state != :unknown
+    self[pos].state = :empty
 
     (-1..1).each do |x_offset|
       (-1..1).each do |y_offset|
@@ -22,11 +22,10 @@ class Board
         next unless on_board?(neighbor_pos)
         next if neighbor_pos == pos || self[neighbor_pos].bomb
 
-        bomb_count = find_bomb_count(neighbor_pos)
-        debugger
-        if bomb_count > 0
-          self[neighbor_pos].reveal = " #{bomb_count} "
-          self[neighbor_pos].explored = true
+        neighbor_bomb_count = count_bombs(neighbor_pos)
+        if neighbor_bomb_count > 0
+          self[neighbor_pos].state = :bomb_neighbor
+          self[neighbor_pos].symbol = " #{neighbor_bomb_count} "
         else
           check(neighbor_pos)
           next
@@ -35,23 +34,26 @@ class Board
     end
   end
 
-  def populate
-    bombs.times { place_tile(Tile.new(true)) }
-    (size**2 - bombs).times { place_tile(Tile.new) }
+  def count_unexplored_tiles
+    count = 0
+
+    @grid.each do |row|
+      row.each do |tile|
+        count += 1 if tile.state == :unknown
+      end
+    end
+
+    @unexplored_tiles = count
   end
 
-  def place_tile(tile)
-    position = random_pos
-    position = random_pos until self[position].nil?
-    self[position] = tile
+  def count_bombs(pos)
+    total_bombs = 0
+    all_neighbors(pos).each { |tile| total_bombs += 1 if self[tile].bomb }
+    total_bombs
   end
 
-  def bomb?(pos)
-    self[pos].bomb
-  end
-
-  def pos_on_board?(pos)
-    pos.all? { |coord| (0...size).include?(coord) }
+  def on_board?(pos)
+    pos.all? { |coord| coord >= 0 && coord < (@size) }
   end
 
   def [](pos)
@@ -64,24 +66,24 @@ class Board
     grid[x][y] = value
   end
 
-  def find_bomb_count(pos)
+  private
+  attr_reader :bombs, :size
 
-    all_neighbors(pos).inject(0)  do |accum, neighbor|
-      # debugger
-      if self[neighbor].bomb
-        accum + 1
-      end
-    end
-    # total_bombs = 0
-    #
-    # all_neighbors(pos).each do |neighbor|
-    #   total_bombs += 1 if self[neighbor].bomb
-    # end
-    #
-    # total_bombs
+  def random_position!
+    position = [rand(size), rand(size)]
+    position = [rand(size), rand(size)] until self[position].nil?
+    position
   end
 
-  private
+  def populate
+    bombs.times { place_tile(Tile.new(true)) }
+    (size**2 - bombs).times { place_tile(Tile.new) }
+  end
+
+  def place_tile(tile)
+    rando = random_position!
+    self[rando] = tile
+  end
 
   def all_neighbors(pos)
     neighbors = []
@@ -90,17 +92,10 @@ class Board
       (-1..1).each do |y_offset|
         x = x_offset + pos[0]
         y = y_offset + pos[1]
-        neighbors << [x, y] if pos_on_board?([x, y])
+        neighbors << [x, y] if on_board?([x, y])
       end
     end
+
     neighbors
-  end
-
-  def random_pos
-    [rand(size), rand(size)]
-  end
-
-  def on_board?(pos)
-    pos.all? { |coord| coord >= 0 && coord < (@size) }
   end
 end
