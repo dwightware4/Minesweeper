@@ -1,5 +1,5 @@
-require_relative 'board.rb'
-require_relative 'display.rb'
+load 'board.rb'
+load 'display.rb'
 require_relative 'cursorable'
 
 class Game
@@ -7,8 +7,7 @@ class Game
 
   def initialize(size = 9, bombs = size ** 2 / 8)
     @board = Board.new(size, bombs)
-    @display = Display.new(board)
-    @bombs = bombs
+    @display = Display.new(board, bombs)
   end
 
   def play
@@ -28,6 +27,7 @@ class Game
     elsif move[:action] == :flag
       if board[move[:location]].reveal = " @ "
         board[move[:location]].reveal = " X "
+        @bombs -= 1
       else
         board[move[:location]].reveal = " @ "
       end
@@ -57,7 +57,7 @@ class Game
   end
 
   def won?
-    board.possible_bombs == board.bombs + 1
+    false
   end
 end
 

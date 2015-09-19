@@ -1,18 +1,21 @@
 require 'colorize'
+require_relative 'board.rb'
 
 class Display
-  attr_accessor :cursor_pos
+  attr_accessor :cursor_pos, :remaining_bombs
   attr_reader :board
 
-  def initialize(board)
-    @board, @cursor_pos = board, [0, 0]
+  def initialize(board, bombs)
+    @board = board
+    @cursor_pos = [0, 0]
+    @remaining_bombs = bombs
   end
 
   def render
     system("clear")
     puts "Welcome to Minesweeper!".colorize(:blue)
     puts "Arrow keys to move, Space to select".colorize(:blue)
-    puts "Bombs: #{board.possible_bomb_count}".colorize(:red)
+    puts "Bombs: bombs".colorize(:red)
     build_grid.each do |row|
     puts row.join
     end
@@ -21,7 +24,7 @@ class Display
   private
 
   def build_grid
-    board.rows.map.with_index do |row, i|
+    board.grid.map.with_index do |row, i|
       build_row(row, i)
     end
   end
