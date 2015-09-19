@@ -1,3 +1,3 @@
 # minesweeper
 
-Basic command-line implementation of the classic Minesweeper game.
+Command line version of Minesweeper. May not run on non-Mac machines.
