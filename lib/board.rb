@@ -41,9 +41,7 @@ class Board
   end
 
   def count_bombs(pos)
-    total_bombs = 0
-    all_neighbors(pos).each { |tile| total_bombs += 1 if self[tile].bomb }
-    total_bombs
+    all_neighbors(pos).count { |tile| self[tile].bomb }
   end
 
   def on_board?(pos)
