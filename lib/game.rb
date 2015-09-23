@@ -73,10 +73,10 @@ class Game
     bomb_count = board.count_bombs(move)
 
     if bomb_count > 0
-      board[move].state = :bomb_neighbor
+      board[move].state = :exposed
       board[move].symbol = " #{bomb_count} "
     else
-      board.check(move)
+      board.explore(move)
     end
   end
 

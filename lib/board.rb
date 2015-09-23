@@ -12,26 +12,20 @@ class Board
     populate
   end
 
-  def check(pos)
-    return if self[pos].state != :unknown
-    self[pos].state = :empty
+  def explore(tile)
+    self[tile].state == :unknown ? self[tile].state = :empty : return
 
-    (-1..1).each do |x_offset|
-      (-1..1).each do |y_offset|
-        neighbor_pos = [pos[0] + x_offset, pos[1] + y_offset]
-        next unless on_board?(neighbor_pos)
-        next if neighbor_pos == pos || self[neighbor_pos].bomb
-
-        neighbor_bomb_count = count_bombs(neighbor_pos)
-        if neighbor_bomb_count > 0
-          self[neighbor_pos].state = :bomb_neighbor
-          self[neighbor_pos].symbol = " #{neighbor_bomb_count} "
-        else
-          check(neighbor_pos)
-          next
-        end
-      end
+    all_neighbors(tile).each do |neighbor|
+      next if self[neighbor].bomb
+      bombs = count_bombs(neighbor)
+      bombs > 0 ? expose(self[neighbor], bombs) : explore(neighbor)
+      next
     end
+  end
+
+  def expose(tile, bombs)
+    tile.state = :exposed
+    tile.symbol = " #{ bombs } "
   end
 
   def count_unexplored_tiles
@@ -92,7 +86,7 @@ class Board
       (-1..1).each do |y_offset|
         x = x_offset + pos[0]
         y = y_offset + pos[1]
-        neighbors << [x, y] if on_board?([x, y])
+        neighbors << [x, y] if on_board?([x, y]) && [x, y] != pos
       end
     end
 
