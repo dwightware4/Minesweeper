@@ -1,6 +1,6 @@
-load 'board.rb'
-load 'display.rb'
-require_relative 'cursorable'
+require './board'
+require './display'
+require './cursorable'
 
 class Game
   include Cursorable

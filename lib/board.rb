@@ -1,6 +1,5 @@
-require_relative 'tile.rb'
+require './tile'
 require 'colorize'
-require 'byebug'
 
 class Board
   attr_accessor :grid, :remaining_bombs, :unexplored_tiles

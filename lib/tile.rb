@@ -1,4 +1,4 @@
-require_relative 'board.rb'
+require './board'
 
 class Tile
   attr_accessor :symbol, :state
