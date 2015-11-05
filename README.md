@@ -6,7 +6,7 @@ To play the game, simply download the repo, run `bundle install`, cd into the li
 
 # Code Sample
 
-This code sample show the explore and expose methods, which recursively explore the board and open up empty spaces.
+This code sample shows the explore and expose methods, which recursively explore the board and open up empty spaces.
 
 ![alt tag](screenshots/explore.png)
 
